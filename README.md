@@ -71,7 +71,7 @@ is provided below:
 }
 ```
 
-Once you have the data, please compute a few statistics on the valid patients:
+A few statistics were computed on the valid patients:
 
 - Total number of valid patients
 - Maximum/Minimun/Median length among patient timelines in days 
@@ -81,29 +81,55 @@ patient’s last event)
 - Maximum/Minimum/Median age among patients as calculated between birthdate and 
 last event in timeline
 
+## Instructions to run the generate_patient_data.py
 
-Please send us a zip file of a folder with one JSON generated per patient, the 
-requested statistics, as well as any code used to generate those counts and 
-JSONs, and any tests (unit or otherwise) you may have written. Also include 
-instructions on how to run that code, either in a brief readme or in comments 
-within the code. We generally use Python or Scala here but we care more about 
-the logic and thought process than the language. Pick whatever language you 
-like, just be sure to include instructions on how to build and run your code.
+Please run the `generate_patient_data.py` in terminal as follows:
 
-**A Note on Libraries and External Code:** 
+```
+$ python3 generate_patient_data.py [-h] [-load] (--run_json | --run_analysis)
+```
 
-In general use only the standard library available with your language of 
-choice. Libraries for the basic I/O of files, representation of `Date` 
-objects and the output of `json` are fine, though as an exercise we'd prefer
-you not use delimited file parsing libraries for the input. If using python, 
-we would strongly prefer a solution relying exclusively on the python standard
-library (excluding the `csv` package, we think you should be able to write your
-own delimited file parsing code) and not numpy, pandas or similar libraries.
+### Requiered arguments
 
-Regarding use of Spark and similar tools: if you do use Spark, do **NOT** use 
-the DataFrame or DataSet API. Again, this problem is trivial to solve with an 
-API with rich support for SQL and similar interfaces. The objective here is to 
-show how you would build something without the support of a lot of built-in 
-solutions.
+- **--run_json**:  This option will generate all json files per patient and save them inside a folder
+- **--run_analysis**: This option will generate all the stats regarding the generated event patient data
 
-Good luck! 
+### Optional arguments
+
+- **-load**: Use this flag in order to parse source data files and store them in a database
+- **-h**, **--help**: Use this flag to show help message and exit
+
+### Description
+
+Algorithm will load `demo.psv` and `events.psv` files, parse them and load them into a local sqlite database. It will create two tables, one for each file. A primary key constraint was added to patient_id in demo table and foreign key added to patient_id in events table. The two tables are then joinned together to create a new table according to the following especifications:
+
+- **INNER JOIN** in order to exclude patient_ids with no event data in the events table and no demographic data in the demo table. 
+- **WHERE CLAUSE** in order to filter events with no icd_code 
+
+JSON files are then generated per patient_id and saved into a `patient_json_files` directory created during execution.
+
+### Usage
+
+1. **First** run algorithm with *-load* flag in order to generate event patient data and store them in JSON files:
+
+```
+$ python3 generate_patient_data.py -load --run_json
+```
+
+2. **Second**, run algorithm again with *--run_analysis* option to generate event patient data stats:
+```
+$ python3 generate_patient_data.py --run_analysis
+```
+
+### Optional
+
+In order to rerun algorithm to generate JSON files after loading data, you can run script as:
+```
+$ python3 generate_patient_data.py --run_json
+```
+
+In order to load data and show event patient data stats without the need to generate JSON files, you can run script as:
+```
+$ python3 generate_patient_data.py -load --run_analysis
+```
+
