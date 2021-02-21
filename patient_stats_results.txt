@@ -1,0 +1,9 @@
+Total number of valid patients:  352
+The maximum event length:  984
+The minimum event length:  0
+The median event length:  0
+Total number of female patients:  ('F', 190)
+Total number of male patients:  ('M', 162)
+The maximum patient age:  92
+The minimum patient age:  2
+The median patient age:  62
